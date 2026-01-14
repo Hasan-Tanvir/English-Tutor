@@ -1,0 +1,16 @@
+{
+  "name": "english-tutor-ai",
+  "version": "1.0.0",
+  "description": "AI English tutor website with DeepSeek API",
+  "type": "module",
+  "engines": {
+    "node": ">=18.x"
+  },
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5"
+  }
+}
