@@ -2,141 +2,286 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Tutor AI - Free Practice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="English Tutor">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📚</text></svg>">
+    <link rel="manifest" href="manifest.json">
+    
+    <title>English Tutor AI - Learn English</title>
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
+        /* ===== RESET & BASE ===== */
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
+        
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --shadow: 0 10px 30px rgba(0,0,0,0.1);
+            --radius: 16px;
+            --radius-sm: 12px;
+            --radius-lg: 24px;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 15px;
+            padding-bottom: 80px; /* Space for install button */
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* ===== CONTAINER & LAYOUT ===== */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 20px;
+            grid-template-columns: 1fr;
+            gap: 15px;
         }
-        .main-panel {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
+        
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 2fr 1fr;
+                gap: 20px;
+            }
         }
-        .sidebar {
+        
+        .panel {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
         }
+        
+        /* ===== HEADER ===== */
         header {
-            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
-            padding: 30px;
+            padding: 25px 20px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--warning), var(--secondary), var(--primary));
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
         h1 {
-            font-size: 2.2rem;
-            margin-bottom: 10px;
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
+        
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+        
         .tagline {
-            font-size: 1rem;
+            font-size: 0.95rem;
             opacity: 0.9;
             margin-bottom: 15px;
+            font-weight: 300;
         }
+        
         .status {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 6px 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.15);
+            padding: 8px 20px;
             border-radius: 20px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
         }
-        .status.online {
-            background: #10b981;
+        
+        .status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--secondary);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
         }
-        main {
-            padding: 25px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
+        
+        /* ===== CHAT CONTROLS ===== */
         .chat-controls {
             display: flex;
             gap: 10px;
-            margin-bottom: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+            background: var(--light);
         }
-        .control-btn {
-            padding: 8px 15px;
+        
+        .btn {
+            padding: 10px 15px;
             border: none;
-            border-radius: 10px;
-            background: #f1f5f9;
-            color: #475569;
+            border-radius: var(--radius-sm);
             cursor: pointer;
             font-size: 0.9rem;
+            font-weight: 500;
             transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-width: 70px;
+            flex: 1;
         }
-        .control-btn:hover {
-            background: #e2e8f0;
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        .control-btn.save {
-            background: #3b82f6;
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
         }
-        .control-btn.save:hover {
-            background: #2563eb;
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark), #3730a3);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
         }
+        
+        .btn-secondary {
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid #cbd5e1;
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--secondary), #059669);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+        
+        /* ===== CHAT CONTAINER ===== */
         .chat-container {
-            background: #f8fafc;
-            border-radius: 15px;
-            padding: 20px;
             flex: 1;
             display: flex;
             flex-direction: column;
+            padding: 15px;
         }
+        
         #chat-box {
             flex: 1;
             overflow-y: auto;
             padding: 15px;
             background: white;
-            border-radius: 10px;
+            border-radius: var(--radius-sm);
             margin-bottom: 15px;
             border: 1px solid #e2e8f0;
             max-height: 400px;
+            min-height: 300px;
         }
+        
+        @media (min-width: 768px) {
+            #chat-box {
+                max-height: 500px;
+            }
+        }
+        
         .message {
             margin-bottom: 12px;
             padding: 12px 16px;
-            border-radius: 15px;
+            border-radius: var(--radius-sm);
             max-width: 85%;
             line-height: 1.5;
-            animation: fadeIn 0.3s ease;
+            animation: slideIn 0.3s ease;
+            position: relative;
+            word-wrap: break-word;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        @keyframes slideIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(10px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
         }
+        
         .user-message {
-            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             margin-left: auto;
             border-bottom-right-radius: 5px;
         }
+        
         .ai-message {
-            background: #f1f5f9;
-            color: #334155;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            color: var(--dark);
             margin-right: auto;
             border-bottom-left-radius: 5px;
-            position: relative;
+            border-left: 4px solid var(--primary);
         }
+        
         .save-word-btn {
             position: absolute;
             top: 5px;
             right: 5px;
-            background: #f59e0b;
+            background: var(--warning);
             color: white;
             border: none;
             border-radius: 50%;
@@ -150,259 +295,460 @@
             opacity: 0;
             transition: opacity 0.3s;
         }
+        
         .ai-message:hover .save-word-btn {
             opacity: 1;
         }
+        
+        /* ===== INPUT AREA ===== */
         .input-area {
             display: flex;
             gap: 10px;
+            padding: 10px;
+            background: var(--light);
+            border-radius: var(--radius-sm);
+            border: 1px solid #e2e8f0;
         }
+        
         #user-input {
             flex: 1;
-            padding: 15px 20px;
-            border: 2px solid #e2e8f0;
+            padding: 12px 18px;
+            border: 2px solid #cbd5e1;
             border-radius: 25px;
-            font-size: 15px;
+            font-size: 16px;
             transition: all 0.3s;
+            background: white;
         }
+        
         #user-input:focus {
             outline: none;
-            border-color: #4f46e5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
         }
+        
         #send-btn {
-            background: linear-gradient(90deg, #4f46e5, #7c3aed);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             color: white;
             border: none;
-            padding: 0 30px;
+            padding: 0 25px;
             border-radius: 25px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 600;
             transition: all 0.3s;
+            min-width: 80px;
         }
-        #send-btn:hover {
+        
+        #send-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
         }
+        
         #send-btn:disabled {
             background: #94a3b8;
             cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+            opacity: 0.7;
         }
+        
+        /* ===== TYPING INDICATOR ===== */
         .typing {
             display: inline-flex;
             align-items: center;
             gap: 5px;
-            color: #64748b;
+            color: var(--gray);
             font-style: italic;
         }
+        
         .typing span {
             animation: blink 1.4s infinite;
             font-size: 18px;
         }
+        
         .typing span:nth-child(2) { animation-delay: 0.2s; }
         .typing span:nth-child(3) { animation-delay: 0.4s; }
+        
         @keyframes blink {
             0%, 100% { opacity: 0.2; }
             50% { opacity: 1; }
         }
+        
+        /* ===== FOOTER ===== */
         footer {
             text-align: center;
-            padding: 20px;
-            color: #64748b;
+            padding: 15px;
+            color: var(--gray);
             font-size: 0.85rem;
             border-top: 1px solid #e2e8f0;
+            background: var(--light);
         }
         
-        /* Vocabulary Notebook Styles */
+        /* ===== VOCABULARY NOTEBOOK ===== */
         .vocab-header {
-            background: linear-gradient(90deg, #10b981, #059669);
+            background: linear-gradient(135deg, var(--secondary), #059669);
             color: white;
             padding: 20px;
             text-align: center;
         }
+        
         .vocab-header h2 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-        .vocab-content {
-            padding: 20px;
-            flex: 1;
-            overflow-y: auto;
-        }
-        .vocab-controls {
-            padding: 15px;
-            border-top: 1px solid #e2e8f0;
+            font-size: 1.4rem;
+            margin-bottom: 8px;
             display: flex;
+            align-items: center;
+            justify-content: center;
             gap: 10px;
         }
-        #new-word-input, #bangla-meaning-input {
+        
+        .vocab-stats {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.15);
+            padding: 6px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .vocab-content {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        #add-vocab-btn {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .vocab-item {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
+            overflow-y: auto;
             padding: 15px;
-            margin-bottom: 10px;
+            max-height: 400px;
+        }
+        
+        .vocab-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-sm);
+            padding: 15px;
+            margin-bottom: 12px;
             transition: all 0.3s;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
+        
         .vocab-item:hover {
-            background: #f1f5f9;
+            background: var(--light);
             transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #cbd5e1;
         }
+        
         .vocab-word {
             font-weight: bold;
-            color: #1e40af;
+            color: var(--primary-dark);
             font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-        .vocab-meaning {
-            color: #475569;
-            font-size: 0.95rem;
             margin-bottom: 8px;
+            padding-right: 30px;
         }
+        
+        .vocab-meaning {
+            color: var(--dark);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        
         .vocab-bangla {
             color: #dc2626;
             font-size: 0.95rem;
-            font-weight: 500;
-            padding: 5px 10px;
+            font-weight: 600;
+            padding: 6px 12px;
             background: #fef2f2;
-            border-radius: 6px;
+            border-radius: 8px;
             display: inline-block;
+            border: 1px solid #fecaca;
         }
+        
         .vocab-date {
-            color: #64748b;
-            font-size: 0.8rem;
-            margin-top: 5px;
+            color: var(--gray);
+            font-size: 0.75rem;
+            margin-top: 8px;
+            font-style: italic;
         }
+        
         .delete-vocab {
-            float: right;
-            background: #ef4444;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--danger);
             color: white;
             border: none;
             border-radius: 50%;
             width: 24px;
             height: 24px;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
         }
+        
+        .delete-vocab:hover {
+            background: #dc2626;
+            transform: scale(1.1);
+        }
+        
         .empty-vocab {
             text-align: center;
-            color: #94a3b8;
+            color: var(--gray);
             padding: 40px 20px;
             font-style: italic;
+            background: var(--light);
+            border-radius: var(--radius-sm);
+            border: 2px dashed #cbd5e1;
         }
-        .export-btn {
-            background: #8b5cf6;
+        
+        .empty-vocab div {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .vocab-controls {
+            padding: 15px;
+            border-top: 1px solid #e2e8f0;
+            background: var(--light);
+        }
+        
+        .vocab-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        @media (min-width: 480px) {
+            .vocab-inputs {
+                flex-direction: row;
+            }
+        }
+        
+        .vocab-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .vocab-input:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+        }
+        
+        .vocab-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .vocab-buttons .btn {
+            flex: 1;
+        }
+        
+        /* ===== INSTALL APP BUTTON ===== */
+        #install-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--warning), #d97706);
             color: white;
             border: none;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 50px;
+            padding: 12px 20px;
             font-size: 14px;
-            margin-top: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 5px 20px rgba(245, 158, 11, 0.3);
+            z-index: 1000;
+            animation: bounce 2s infinite;
+            display: none; /* Hidden by default */
         }
-        .export-btn:hover {
-            background: #7c3aed;
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        /* ===== LOADING SPINNER ===== */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(79, 70, 229, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ===== SCROLLBAR STYLING ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a1a1a1;
+        }
+        
+        /* ===== OFFLINE MESSAGE ===== */
+        #offline-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--danger);
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            z-index: 1001;
+            display: none;
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
         }
     </style>
 </head>
 <body>
+    <!-- Offline Message -->
+    <div id="offline-message">
+        ⚠️ You're offline. Chat history and vocabulary still work.
+    </div>
+    
+    <!-- Install App Button -->
+    <button id="install-button" style="display: none;">
+        📱 Install App
+    </button>
+    
     <div class="container">
         <!-- Main Chat Panel -->
-        <div class="main-panel">
+        <div class="panel">
             <header>
-                <h1>🤖 English Tutor AI</h1>
-                <p class="tagline">Practice English with AI - Free Forever</p>
-                <div class="status online">● API Connected</div>
+                <div class="header-content">
+                    <h1>🤖 English Tutor AI</h1>
+                    <p class="tagline">Practice English Conversation, Grammar & Vocabulary</p>
+                    <div class="status">AI Connected • Free Forever</div>
+                </div>
             </header>
             
-            <main>
-                <div class="chat-controls">
-                    <button class="control-btn" onclick="saveChatHistory()">💾 Save Chat</button>
-                    <button class="control-btn" onclick="loadChatHistory()">📂 Load Chat</button>
-                    <button class="control-btn" onclick="clearChat()">🗑️ Clear</button>
-                    <button class="control-btn save" onclick="exportVocabulary()">📥 Export Words</button>
+            <div class="chat-controls">
+                <button class="btn btn-secondary" onclick="saveChatHistory()" title="Save current chat">
+                    💾 Save
+                </button>
+                <button class="btn btn-secondary" onclick="loadChatHistory()" title="Load saved chat">
+                    📂 Load
+                </button>
+                <button class="btn btn-secondary" onclick="clearChat()" title="Clear chat history">
+                    🗑️ Clear
+                </button>
+                <button class="btn btn-primary" onclick="exportVocabulary()" title="Export vocabulary">
+                    📥 Export
+                </button>
+            </div>
+            
+            <div class="chat-container">
+                <div id="chat-box">
+                    <div class="message ai-message">
+                        👋 Hello! I'm your AI English tutor. I can help you with:
+                        <br><br>
+                        • Conversation practice<br>
+                        • Grammar explanations<br>
+                        • Vocabulary building<br>
+                        • Writing corrections<br>
+                        <br>
+                        What would you like to practice today?
+                        <button class="save-word-btn" title="Save word from this message">📝</button>
+                    </div>
                 </div>
                 
-                <div class="chat-container">
-                    <div id="chat-box">
-                        <div class="message ai-message">
-                            👋 Hello! I'm your AI English tutor. I can help you with:
-                            <br><br>
-                            • Conversation practice<br>
-                            • Grammar explanations<br>
-                            • Vocabulary building<br>
-                            • Writing corrections<br>
-                            <br>
-                            What would you like to practice today?
-                            <button class="save-word-btn" title="Save this message">📝</button>
-                        </div>
-                    </div>
-                    
-                    <div class="input-area">
-                        <input type="text" id="user-input" 
-                               placeholder="Type your message in English..." 
-                               autocomplete="off">
-                        <button id="send-btn">Send →</button>
-                    </div>
+                <div class="input-area">
+                    <input type="text" id="user-input" 
+                           placeholder="Type your message in English..." 
+                           autocomplete="off">
+                    <button id="send-btn">Send →</button>
                 </div>
-            </main>
+            </div>
             
             <footer>
-                <p>Powered by Groq AI • 100% Free • Chat auto-saves locally</p>
+                <p>Powered by Groq AI • 100% Free • Auto-saves locally</p>
+                <p style="font-size: 0.8rem; margin-top: 5px; color: #94a3b8;">
+                    Perfect for IELTS, TOEFL, বা日常 কথাবার্তা
+                </p>
             </footer>
         </div>
         
         <!-- Vocabulary Notebook Sidebar -->
-        <div class="sidebar">
+        <div class="panel">
             <div class="vocab-header">
                 <h2>📒 Vocabulary Notebook</h2>
-                <p>Save new words with Bangla meanings</p>
+                <p>Save new words with বাংলা meanings</p>
+                <div class="vocab-stats">
+                    Words: <span id="word-count">0</span>
+                </div>
             </div>
             
             <div class="vocab-content" id="vocab-list">
-                <!-- Vocabulary items will appear here -->
                 <div class="empty-vocab">
+                    <div>📝</div>
                     No words saved yet.<br>
-                    Click 📝 on AI messages to save words!
+                    <small>Click 📝 on AI messages to save words!</small>
                 </div>
             </div>
             
             <div class="vocab-controls">
-                <input type="text" id="new-word-input" placeholder="English word">
-                <input type="text" id="bangla-meaning-input" placeholder="Bangla meaning">
-                <button id="add-vocab-btn" onclick="addVocabularyItem()">➕ Add</button>
+                <div class="vocab-inputs">
+                    <input type="text" id="new-word-input" class="vocab-input" 
+                           placeholder="English word" autocomplete="off">
+                    <input type="text" id="bangla-meaning-input" class="vocab-input" 
+                           placeholder="বাংলা অর্থ" autocomplete="off">
+                </div>
+                <div class="vocab-buttons">
+                    <button class="btn btn-success" onclick="addVocabularyItem()">
+                        ➕ Add Word
+                    </button>
+                </div>
             </div>
             
-            <div style="padding: 15px; text-align: center;">
-                <button class="export-btn" onclick="exportVocabulary()">📥 Export as Text</button>
-                <button class="export-btn" onclick="clearVocabulary()" style="background: #ef4444; margin-left: 10px;">
-                    🗑️ Clear All
+            <div style="padding: 15px; background: var(--light); border-top: 1px solid #e2e8f0;">
+                <button class="btn btn-primary" onclick="exportVocabulary()" style="margin-bottom: 10px;">
+                    📥 Export as Text
+                </button>
+                <button class="btn btn-danger" onclick="clearVocabulary()">
+                    🗑️ Clear All Words
                 </button>
             </div>
         </div>
     </div>
 
+    <!-- Service Worker Registration & PWA Code -->
     <script>
         // ===== CONFIGURATION =====
         const API_URL = '/api/chat';
+        const CHAT_STORAGE_KEY = 'english_tutor_chat_history';
+        const VOCAB_STORAGE_KEY = 'english_tutor_vocabulary';
+        const SETTINGS_STORAGE_KEY = 'english_tutor_settings';
+        
+        // ===== GLOBAL VARIABLES =====
+        let chatHistory = [];
+        let vocabulary = [];
+        let deferredPrompt = null;
         
         // ===== DOM ELEMENTS =====
         const chatBox = document.getElementById('chat-box');
@@ -411,23 +757,91 @@
         const vocabList = document.getElementById('vocab-list');
         const newWordInput = document.getElementById('new-word-input');
         const banglaMeaningInput = document.getElementById('bangla-meaning-input');
+        const wordCount = document.getElementById('word-count');
+        const offlineMessage = document.getElementById('offline-message');
+        const installButton = document.getElementById('install-button');
+        
+        // ===== PWA INSTALL PROMPT =====
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installButton.style.display = 'flex';
+            
+            installButton.addEventListener('click', async () => {
+                installButton.style.display = 'none';
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response to the install prompt: ${outcome}`);
+                deferredPrompt = null;
+            });
+        });
+        
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA installed successfully');
+            installButton.style.display = 'none';
+            deferredPrompt = null;
+            showNotification('✅ English Tutor installed successfully!');
+        });
+        
+        // ===== SERVICE WORKER REGISTRATION =====
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(registration => {
+                    console.log('ServiceWorker registered:', registration.scope);
+                }).catch(error => {
+                    console.log('ServiceWorker registration failed:', error);
+                });
+            });
+        }
+        
+        // ===== OFFLINE DETECTION =====
+        window.addEventListener('online', () => {
+            offlineMessage.style.display = 'none';
+            console.log('Online');
+        });
+        
+        window.addEventListener('offline', () => {
+            offlineMessage.style.display = 'block';
+            console.log('Offline');
+        });
+        
+        // ===== NOTIFICATION SYSTEM =====
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: slideInRight 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
         
         // ===== CHAT HISTORY SYSTEM =====
-        let chatHistory = [];
-        const CHAT_STORAGE_KEY = 'english_tutor_chat_history';
-        const VOCAB_STORAGE_KEY = 'english_tutor_vocabulary';
-        
-        // Load chat history on page load
         function loadSavedChat() {
             const saved = localStorage.getItem(CHAT_STORAGE_KEY);
             if (saved) {
                 try {
                     chatHistory = JSON.parse(saved);
                     if (chatHistory.length > 0) {
-                        // Clear default message and load saved messages
                         chatBox.innerHTML = '';
                         chatHistory.forEach(msg => {
-                            addMessage(msg.text, msg.sender, false); // false = don't save to history again
+                            addMessage(msg.text, msg.sender, false);
                         });
                         console.log('Loaded chat history:', chatHistory.length, 'messages');
                     }
@@ -437,40 +851,31 @@
             }
         }
         
-        // Save chat to localStorage
         function saveChatToStorage() {
             localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chatHistory));
-            console.log('Chat saved to storage:', chatHistory.length, 'messages');
         }
         
-        // Save chat button
         function saveChatHistory() {
             saveChatToStorage();
-            alert('✅ Chat saved successfully! It will auto-load next time.');
+            showNotification('✅ Chat saved successfully!', 'success');
         }
         
-        // Load chat button
         function loadChatHistory() {
             loadSavedChat();
-            alert('📂 Previous chat loaded!');
+            showNotification('📂 Previous chat loaded!', 'success');
         }
         
-        // Clear chat
         function clearChat() {
             if (confirm('Are you sure you want to clear the chat?')) {
                 chatHistory = [];
                 chatBox.innerHTML = '';
                 localStorage.removeItem(CHAT_STORAGE_KEY);
-                // Add default welcome message
                 addMessage(`👋 Hello! I'm your AI English tutor. I can help you with:\n\n• Conversation practice\n• Grammar explanations\n• Vocabulary building\n• Writing corrections\n\nWhat would you like to practice today?`, 'ai', true);
-                alert('Chat cleared!');
+                showNotification('🗑️ Chat cleared!', 'success');
             }
         }
         
         // ===== VOCABULARY NOTEBOOK SYSTEM =====
-        let vocabulary = [];
-        
-        // Load vocabulary from localStorage
         function loadVocabulary() {
             const saved = localStorage.getItem(VOCAB_STORAGE_KEY);
             if (saved) {
@@ -483,58 +888,72 @@
             }
         }
         
-        // Render vocabulary list
         function renderVocabularyList() {
             if (vocabulary.length === 0) {
                 vocabList.innerHTML = `
                     <div class="empty-vocab">
+                        <div>📝</div>
                         No words saved yet.<br>
-                        Click 📝 on AI messages to save words!
+                        <small>Click 📝 on AI messages to save words!</small>
                     </div>
                 `;
-                return;
+            } else {
+                vocabList.innerHTML = vocabulary.map((item, index) => `
+                    <div class="vocab-item">
+                        <button class="delete-vocab" onclick="deleteVocabularyItem(${index})" title="Delete">×</button>
+                        <div class="vocab-word">${item.word}</div>
+                        <div class="vocab-meaning">${item.meaning.substring(0, 80)}${item.meaning.length > 80 ? '...' : ''}</div>
+                        <div class="vocab-bangla">🇧🇩 ${item.bangla}</div>
+                        <div class="vocab-date">Saved: ${new Date(item.date).toLocaleDateString('en-BD')}</div>
+                    </div>
+                `).join('');
             }
-            
-            vocabList.innerHTML = vocabulary.map((item, index) => `
-                <div class="vocab-item">
-                    <button class="delete-vocab" onclick="deleteVocabularyItem(${index})" title="Delete">×</button>
-                    <div class="vocab-word">${item.word}</div>
-                    <div class="vocab-meaning">${item.meaning}</div>
-                    <div class="vocab-bangla">${item.bangla}</div>
-                    <div class="vocab-date">Added: ${new Date(item.date).toLocaleDateString()}</div>
-                </div>
-            `).join('');
+            updateWordCount();
         }
         
-        // Add vocabulary item
+        function updateWordCount() {
+            wordCount.textContent = vocabulary.length;
+        }
+        
         function addVocabularyItem() {
             const word = newWordInput.value.trim();
             const bangla = banglaMeaningInput.value.trim();
             
             if (!word) {
-                alert('Please enter an English word');
+                showNotification('⚠️ Please enter an English word', 'error');
                 return;
             }
             
             if (!bangla) {
-                alert('Please enter the Bangla meaning');
+                showNotification('⚠️ Please enter the Bangla meaning', 'error');
                 return;
             }
             
-            // Ask AI for meaning/explanation
-            const aiMessage = `What does "${word}" mean? Give a simple explanation.`;
-            
             // Show loading
-            vocabList.innerHTML = '<div class="empty-vocab">Getting word explanation from AI...</div>';
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'vocab-item';
+            loadingDiv.innerHTML = `
+                <div class="vocab-word">${word}</div>
+                <div style="text-align: center; padding: 10px;">
+                    <div class="spinner"></div>
+                    <div style="color: var(--gray); font-size: 0.9rem; margin-top: 5px;">
+                        Getting explanation from AI...
+                    </div>
+                </div>
+            `;
+            vocabList.prepend(loadingDiv);
             
+            // Get AI explanation
             fetch(API_URL, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: aiMessage})
+                body: JSON.stringify({message: `Explain the word "${word}" in simple English.`})
             })
             .then(response => response.json())
             .then(data => {
-                const meaning = data.choices?.[0]?.message?.content || `Explanation for "${word}"`;
+                loadingDiv.remove();
+                
+                const meaning = data.choices?.[0]?.message?.content || `Word: ${word}`;
                 
                 const vocabItem = {
                     word: word,
@@ -543,32 +962,21 @@
                     date: new Date().toISOString()
                 };
                 
-                vocabulary.unshift(vocabItem); // Add to beginning
-                if (vocabulary.length > 50) vocabulary.pop(); // Limit to 50 items
+                vocabulary.unshift(vocabItem);
+                if (vocabulary.length > 100) vocabulary.pop();
                 
                 saveVocabularyToStorage();
                 renderVocabularyList();
                 
-                // Clear inputs
                 newWordInput.value = '';
                 banglaMeaningInput.value = '';
                 
-                // Show success
-                const successMsg = document.createElement('div');
-                successMsg.className = 'vocab-item';
-                successMsg.style.background = '#d1fae5';
-                successMsg.innerHTML = `
-                    <div class="vocab-word">✅ "${word}" saved!</div>
-                    <div class="vocab-bangla">${bangla}</div>
-                `;
-                vocabList.prepend(successMsg);
-                
-                setTimeout(() => {
-                    renderVocabularyList();
-                }, 2000);
+                showNotification(`✅ "${word}" added to vocabulary!`, 'success');
             })
             .catch(error => {
+                loadingDiv.remove();
                 console.error('Error getting word meaning:', error);
+                
                 // Add with basic meaning if AI fails
                 const vocabItem = {
                     word: word,
@@ -583,70 +991,56 @@
                 
                 newWordInput.value = '';
                 banglaMeaningInput.value = '';
+                
+                showNotification(`✅ "${word}" added (offline mode)`, 'success');
             });
         }
         
-        // Save word from AI message
         function saveWordFromMessage(word, messageText) {
             const bangla = prompt(`Enter Bangla meaning for "${word}":`);
             if (!bangla) return;
             
             const vocabItem = {
                 word: word,
-                meaning: messageText.substring(0, 200), // First 200 chars of AI message
+                meaning: messageText.substring(0, 200),
                 bangla: bangla,
                 date: new Date().toISOString()
             };
             
             vocabulary.unshift(vocabItem);
-            if (vocabulary.length > 50) vocabulary.pop();
+            if (vocabulary.length > 100) vocabulary.pop();
             
             saveVocabularyToStorage();
             renderVocabularyList();
             
-            // Show notification
-            const notification = document.createElement('div');
-            notification.className = 'vocab-item';
-            notification.style.background = '#d1fae5';
-            notification.innerHTML = `
-                <div class="vocab-word">✅ "${word}" saved to notebook!</div>
-                <div class="vocab-bangla">${bangla}</div>
-            `;
-            vocabList.prepend(notification);
-            
-            setTimeout(() => {
-                renderVocabularyList();
-            }, 2000);
+            showNotification(`✅ "${word}" saved to notebook!`, 'success');
         }
         
-        // Delete vocabulary item
         function deleteVocabularyItem(index) {
             if (confirm('Delete this word?')) {
                 vocabulary.splice(index, 1);
                 saveVocabularyToStorage();
                 renderVocabularyList();
+                showNotification('🗑️ Word deleted', 'success');
             }
         }
         
-        // Clear all vocabulary
         function clearVocabulary() {
             if (confirm('Delete ALL saved words?')) {
                 vocabulary = [];
                 localStorage.removeItem(VOCAB_STORAGE_KEY);
                 renderVocabularyList();
-                alert('All words deleted!');
+                showNotification('🗑️ All words deleted!', 'success');
             }
         }
         
-        // Save vocabulary to localStorage
         function saveVocabularyToStorage() {
             localStorage.setItem(VOCAB_STORAGE_KEY, JSON.stringify(vocabulary));
         }
         
-        // Export vocabulary
         function exportVocabulary() {
             if (vocabulary.length === 0) {
-                alert('No words to export!');
+                showNotification('No words to export!', 'error');
                 return;
             }
             
@@ -654,25 +1048,24 @@
             
             vocabulary.forEach((item, index) => {
                 exportText += `${index + 1}. ${item.word}\n`;
-                exportText += `   English: ${item.meaning.substring(0, 100)}...\n`;
+                exportText += `   English: ${item.meaning.substring(0, 100)}${item.meaning.length > 100 ? '...' : ''}\n`;
                 exportText += `   বাংলা: ${item.bangla}\n`;
-                exportText += `   Date: ${new Date(item.date).toLocaleDateString()}\n\n`;
+                exportText += `   Date: ${new Date(item.date).toLocaleDateString('en-BD')}\n\n`;
             });
             
-            exportText += `\nTotal: ${vocabulary.length} words\nExported: ${new Date().toLocaleString()}`;
+            exportText += `\nTotal: ${vocabulary.length} words\nExported: ${new Date().toLocaleString('en-BD')}`;
             
-            // Create download link
-            const blob = new Blob([exportText], { type: 'text/plain' });
+            const blob = new Blob([exportText], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'english-vocabulary.txt';
+            a.download = `english-vocabulary-${new Date().toISOString().split('T')[0]}.txt`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            alert(`Exported ${vocabulary.length} words to text file!`);
+            showNotification(`📥 Exported ${vocabulary.length} words!`, 'success');
         }
         
         // ===== CHAT FUNCTIONS =====
@@ -681,7 +1074,6 @@
             messageDiv.className = `message ${sender}-message`;
             messageDiv.textContent = text;
             
-            // Add save button to AI messages
             if (sender === 'ai') {
                 const saveBtn = document.createElement('button');
                 saveBtn.className = 'save-word-btn';
@@ -699,10 +1091,9 @@
             chatBox.appendChild(messageDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
             
-            // Save to history
             if (saveToHistory) {
                 chatHistory.push({ text, sender, timestamp: new Date().toISOString() });
-                if (chatHistory.length > 100) chatHistory.shift(); // Limit history
+                if (chatHistory.length > 200) chatHistory.shift();
                 saveChatToStorage();
             }
         }
@@ -728,6 +1119,7 @@
             addMessage(text, 'user');
             userInput.value = '';
             sendBtn.disabled = true;
+            userInput.placeholder = "AI is responding...";
             
             showTyping();
             
@@ -742,7 +1134,9 @@
                 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    addMessage(`Error: ${errorData.error || 'Unknown error'}`, 'ai');
+                    let errorMsg = `Error: ${errorData.error || 'Unknown error'}`;
+                    if (errorData.message) errorMsg += ` - ${errorData.message}`;
+                    addMessage(errorMsg, 'ai');
                     return;
                 }
                 
@@ -760,16 +1154,34 @@
             }
             
             sendBtn.disabled = false;
+            userInput.placeholder = "Type your message in English...";
             userInput.focus();
         }
         
+        // ===== KEYBOARD SHORTCUTS =====
+        document.addEventListener('keydown', (e) => {
+            // Ctrl + S to save chat
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                saveChatHistory();
+            }
+            // Ctrl + E to export vocabulary
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                exportVocabulary();
+            }
+            // Ctrl + L to load chat
+            if (e.ctrlKey && e.key === 'l') {
+                e.preventDefault();
+                loadChatHistory();
+            }
+        });
+        
         // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', () => {
-            // Load saved data
             loadSavedChat();
             loadVocabulary();
             
-            // Set up event listeners
             sendBtn.addEventListener('click', sendMessage);
             
             userInput.addEventListener('keypress', (e) => {
@@ -784,8 +1196,33 @@
             // Focus on input
             userInput.focus();
             
-            console.log('English Tutor AI with Vocabulary Notebook loaded!');
+            // Check if app is running as PWA
+            if (window.matchMedia('(display-mode: standalone)').matches) {
+                console.log('Running as PWA');
+                document.title = 'English Tutor';
+            }
+            
+            console.log('English Tutor AI PWA loaded successfully!');
+            
+            // Show welcome message if first visit
+            const firstVisit = !localStorage.getItem(CHAT_STORAGE_KEY);
+            if (firstVisit) {
+                setTimeout(() => {
+                    showNotification('📱 Tip: Install this app for better experience!', 'success');
+                }, 3000);
+            }
         });
+        
+        // ===== OFFLINE SUPPORT =====
+        const offlineMessages = [
+            "I'm in offline mode. Your chat history and vocabulary are still available.",
+            "You're offline. Previous conversations are saved locally.",
+            "Network unavailable. Working with saved data only."
+        ];
+        
+        function getRandomOfflineMessage() {
+            return offlineMessages[Math.floor(Math.random() * offlineMessages.length)];
+        }
     </script>
 </body>
 </html>
