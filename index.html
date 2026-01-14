@@ -45,7 +45,7 @@
             line-height: 1.6;
             min-height: 100vh;
             padding: 15px;
-            padding-bottom: 80px; /* Space for install button */
+            padding-bottom: 80px;
             -webkit-font-smoothing: antialiased;
         }
         
@@ -189,19 +189,10 @@
             color: white;
         }
         
-        .btn-primary:hover {
-            background: linear-gradient(135deg, var(--primary-dark), #3730a3);
-            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.3);
-        }
-        
         .btn-secondary {
             background: var(--light);
             color: var(--dark);
             border: 1px solid #cbd5e1;
-        }
-        
-        .btn-secondary:hover {
-            background: #e2e8f0;
         }
         
         .btn-success {
@@ -457,6 +448,17 @@
             border-radius: 8px;
             display: inline-block;
             border: 1px solid #fecaca;
+            margin-top: 5px;
+        }
+        
+        .vocab-example {
+            color: var(--primary);
+            font-size: 0.85rem;
+            margin-top: 8px;
+            padding: 5px 10px;
+            background: #eff6ff;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary);
         }
         
         .vocab-date {
@@ -548,31 +550,23 @@
             flex: 1;
         }
         
-        /* ===== INSTALL APP BUTTON ===== */
-        #install-button {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, var(--warning), #d97706);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 12px 20px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
+        /* ===== AUTO-TRANSLATE FEATURE ===== */
+        .auto-translate {
+            display: inline-flex;
             align-items: center;
-            gap: 8px;
-            box-shadow: 0 5px 20px rgba(245, 158, 11, 0.3);
-            z-index: 1000;
-            animation: bounce 2s infinite;
-            display: none; /* Hidden by default */
+            gap: 5px;
+            background: #3b82f6;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
         
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+        .auto-translate:hover {
+            background: #2563eb;
         }
         
         /* ===== LOADING SPINNER ===== */
@@ -608,43 +602,17 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #a1a1a1;
         }
-        
-        /* ===== OFFLINE MESSAGE ===== */
-        #offline-message {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--danger);
-            color: white;
-            padding: 10px 20px;
-            border-radius: var(--radius-sm);
-            font-size: 14px;
-            z-index: 1001;
-            display: none;
-            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
-        }
     </style>
 </head>
 <body>
-    <!-- Offline Message -->
-    <div id="offline-message">
-        ⚠️ You're offline. Chat history and vocabulary still work.
-    </div>
-    
-    <!-- Install App Button -->
-    <button id="install-button" style="display: none;">
-        📱 Install App
-    </button>
-    
     <div class="container">
         <!-- Main Chat Panel -->
         <div class="panel">
             <header>
                 <div class="header-content">
                     <h1>🤖 English Tutor AI</h1>
-                    <p class="tagline">Practice English Conversation, Grammar & Vocabulary</p>
-                    <div class="status">AI Connected • Free Forever</div>
+                    <p class="tagline">Practice English with Auto Bangla Translation</p>
+                    <div class="status">AI Connected • Auto-Translate Active</div>
                 </div>
             </header>
             
@@ -666,30 +634,30 @@
             <div class="chat-container">
                 <div id="chat-box">
                     <div class="message ai-message">
-                        👋 Hello! I'm your AI English tutor. I can help you with:
+                        👋 Hello! I'm your AI English tutor with <strong>auto Bangla translation</strong>! 
                         <br><br>
-                        • Conversation practice<br>
-                        • Grammar explanations<br>
-                        • Vocabulary building<br>
-                        • Writing corrections<br>
+                        <strong>✨ New Features:</strong><br>
+                        • <strong>Auto-translate</strong> - Get Bangla meanings instantly<br>
+                        • <strong>One-click save</strong> - Click 📝 to save words<br>
+                        • <strong>Example sentences</strong> - Learn usage in context<br>
                         <br>
-                        What would you like to practice today?
-                        <button class="save-word-btn" title="Save word from this message">📝</button>
+                        <strong>💡 Try this:</strong> Ask "What does 'revoke' mean?" then click 📝 to save with auto-translation!
+                        <button class="save-word-btn" title="Click to save words from this message">📝</button>
                     </div>
                 </div>
                 
                 <div class="input-area">
                     <input type="text" id="user-input" 
-                           placeholder="Type your message in English..." 
+                           placeholder="Ask about any English word..." 
                            autocomplete="off">
                     <button id="send-btn">Send →</button>
                 </div>
             </div>
             
             <footer>
-                <p>Powered by Groq AI • 100% Free • Auto-saves locally</p>
+                <p>Powered by Groq AI • Auto Bangla Translation • 100% Free</p>
                 <p style="font-size: 0.8rem; margin-top: 5px; color: #94a3b8;">
-                    Perfect for IELTS, TOEFL, বা日常 কথাবার্তা
+                    Words are auto-translated using Google Translate API
                 </p>
             </footer>
         </div>
@@ -697,58 +665,77 @@
         <!-- Vocabulary Notebook Sidebar -->
         <div class="panel">
             <div class="vocab-header">
-                <h2>📒 Vocabulary Notebook</h2>
-                <p>Save new words with বাংলা meanings</p>
+                <h2>📒 Smart Vocabulary</h2>
+                <p>Auto-translates English to Bangla instantly</p>
                 <div class="vocab-stats">
-                    Words: <span id="word-count">0</span>
+                    Words: <span id="word-count">0</span> • Auto-translated: <span id="translated-count">0</span>
                 </div>
             </div>
             
             <div class="vocab-content" id="vocab-list">
                 <div class="empty-vocab">
-                    <div>📝</div>
-                    No words saved yet.<br>
-                    <small>Click 📝 on AI messages to save words!</small>
+                    <div>🤖</div>
+                    <strong>Smart Vocabulary Notebook</strong><br>
+                    <small>Saves words with auto Bangla translation</small>
+                    <div style="margin-top: 20px; font-size: 0.8rem; color: var(--primary); text-align: left; padding: 10px; background: #f0f9ff; border-radius: 8px;">
+                        <strong>📝 How to use:</strong><br>
+                        1. Type any English word below<br>
+                        2. Click "Auto-Translate & Save"<br>
+                        3. Word + Bangla meaning saved!<br>
+                        <br>
+                        <strong>✨ Or in chat:</strong><br>
+                        • Ask about any word<br>
+                        • Click 📝 on AI response<br>
+                        • Auto-translates instantly
+                    </div>
                 </div>
             </div>
             
             <div class="vocab-controls">
                 <div class="vocab-inputs">
                     <input type="text" id="new-word-input" class="vocab-input" 
-                           placeholder="English word" autocomplete="off">
+                           placeholder="Type English word (e.g., 'revoke')" autocomplete="off"
+                           onkeyup="autoDetectAndTranslate()">
                     <input type="text" id="bangla-meaning-input" class="vocab-input" 
-                           placeholder="বাংলা অর্থ" autocomplete="off">
+                           placeholder="Auto-translates to Bangla..." autocomplete="off">
                 </div>
                 <div class="vocab-buttons">
-                    <button class="btn btn-success" onclick="addVocabularyItem()">
-                        ➕ Add Word
+                    <button class="btn btn-success" onclick="translateAndAddWord()" id="translate-btn">
+                        <span id="translate-btn-text">🌐 Auto-Translate & Save</span>
+                        <span class="spinner" id="translate-spinner" style="display: none;"></span>
                     </button>
                 </div>
             </div>
             
             <div style="padding: 15px; background: var(--light); border-top: 1px solid #e2e8f0;">
                 <button class="btn btn-primary" onclick="exportVocabulary()" style="margin-bottom: 10px;">
-                    📥 Export as Text
+                    📥 Export Vocabulary
                 </button>
                 <button class="btn btn-danger" onclick="clearVocabulary()">
-                    🗑️ Clear All Words
+                    🗑️ Clear All
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Service Worker Registration & PWA Code -->
     <script>
         // ===== CONFIGURATION =====
         const API_URL = '/api/chat';
         const CHAT_STORAGE_KEY = 'english_tutor_chat_history';
         const VOCAB_STORAGE_KEY = 'english_tutor_vocabulary';
-        const SETTINGS_STORAGE_KEY = 'english_tutor_settings';
+        
+        // Free Google Translate API Endpoints
+        const TRANSLATE_API_URLS = [
+            'https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=bn&dt=t&q=',
+            'https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=en&tl=bn&q=',
+            'https://translate.google.com/translate_a/single?client=at&sl=en&tl=bn&dt=t&q='
+        ];
         
         // ===== GLOBAL VARIABLES =====
         let chatHistory = [];
         let vocabulary = [];
-        let deferredPrompt = null;
+        let currentSelectedWord = '';
+        let currentAIMessage = '';
         
         // ===== DOM ELEMENTS =====
         const chatBox = document.getElementById('chat-box');
@@ -758,124 +745,324 @@
         const newWordInput = document.getElementById('new-word-input');
         const banglaMeaningInput = document.getElementById('bangla-meaning-input');
         const wordCount = document.getElementById('word-count');
-        const offlineMessage = document.getElementById('offline-message');
-        const installButton = document.getElementById('install-button');
+        const translatedCount = document.getElementById('translated-count');
+        const translateBtn = document.getElementById('translate-btn');
+        const translateBtnText = document.getElementById('translate-btn-text');
+        const translateSpinner = document.getElementById('translate-spinner');
         
-        // ===== PWA INSTALL PROMPT =====
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installButton.style.display = 'flex';
+        // ===== GOOGLE TRANSLATE FUNCTIONS =====
+        async function translateToBangla(word) {
+            if (!word || word.trim() === '') return '';
             
-            installButton.addEventListener('click', async () => {
-                installButton.style.display = 'none';
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
-                deferredPrompt = null;
-            });
-        });
-        
-        window.addEventListener('appinstalled', () => {
-            console.log('PWA installed successfully');
-            installButton.style.display = 'none';
-            deferredPrompt = null;
-            showNotification('✅ English Tutor installed successfully!');
-        });
-        
-        // ===== SERVICE WORKER REGISTRATION =====
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(registration => {
-                    console.log('ServiceWorker registered:', registration.scope);
-                }).catch(error => {
-                    console.log('ServiceWorker registration failed:', error);
-                });
-            });
-        }
-        
-        // ===== OFFLINE DETECTION =====
-        window.addEventListener('online', () => {
-            offlineMessage.style.display = 'none';
-            console.log('Online');
-        });
-        
-        window.addEventListener('offline', () => {
-            offlineMessage.style.display = 'block';
-            console.log('Offline');
-        });
-        
-        // ===== NOTIFICATION SYSTEM =====
-        function showNotification(message, type = 'info') {
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
-                color: white;
-                padding: 12px 20px;
-                border-radius: 10px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                z-index: 10000;
-                animation: slideInRight 0.3s ease;
-            `;
-            notification.textContent = message;
-            document.body.appendChild(notification);
+            const cleanWord = word.trim().toLowerCase();
             
-            // Remove after 3 seconds
-            setTimeout(() => {
-                notification.style.animation = 'slideOutRight 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-        
-        // ===== CHAT HISTORY SYSTEM =====
-        function loadSavedChat() {
-            const saved = localStorage.getItem(CHAT_STORAGE_KEY);
-            if (saved) {
+            // Try multiple translation endpoints
+            for (const apiUrl of TRANSLATE_API_URLS) {
                 try {
-                    chatHistory = JSON.parse(saved);
-                    if (chatHistory.length > 0) {
-                        chatBox.innerHTML = '';
-                        chatHistory.forEach(msg => {
-                            addMessage(msg.text, msg.sender, false);
-                        });
-                        console.log('Loaded chat history:', chatHistory.length, 'messages');
+                    console.log(`Trying translation from: ${apiUrl}`);
+                    const response = await fetch(`${apiUrl}${encodeURIComponent(cleanWord)}`);
+                    
+                    if (!response.ok) continue;
+                    
+                    const data = await response.json();
+                    console.log('Translation response:', data);
+                    
+                    // Parse Google Translate response (different formats)
+                    let translatedText = '';
+                    
+                    if (Array.isArray(data)) {
+                        // Format 1: [[["translated text", "original", null, null]], null, "en"]
+                        if (data[0] && Array.isArray(data[0])) {
+                            if (data[0][0] && Array.isArray(data[0][0])) {
+                                translatedText = data[0][0][0] || '';
+                            }
+                        }
+                        // Format 2: ["translated text", "original", "en", null]
+                        else if (typeof data[0] === 'string') {
+                            translatedText = data[0] || '';
+                        }
                     }
-                } catch (e) {
-                    console.error('Error loading chat history:', e);
+                    // Format 3: {"sentences": [{"trans": "translated text"}]}
+                    else if (data.sentences && Array.isArray(data.sentences)) {
+                        translatedText = data.sentences[0].trans || '';
+                    }
+                    // Format 4: Direct string in array
+                    else if (typeof data === 'string') {
+                        translatedText = data;
+                    }
+                    
+                    if (translatedText && translatedText.trim() !== '' && translatedText !== cleanWord) {
+                        console.log(`Successfully translated: ${cleanWord} -> ${translatedText}`);
+                        return translatedText.trim();
+                    }
+                } catch (error) {
+                    console.warn(`Translation endpoint failed: ${apiUrl}`, error);
+                    continue;
                 }
             }
+            
+            // Fallback to local dictionary if API fails
+            return getBanglaFromDictionary(cleanWord);
         }
         
-        function saveChatToStorage() {
-            localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chatHistory));
+        // Local dictionary fallback
+        function getBanglaFromDictionary(word) {
+            const dictionary = {
+                'revoke': 'প্রত্যাহার করা',
+                'enhance': 'উন্নত করা',
+                'meticulous': 'সূক্ষ্মদর্শী',
+                'vocabulary': 'শব্দভান্ডার',
+                'conversation': 'কথোপকথন',
+                'grammar': 'ব্যাকরণ',
+                'pronunciation': 'উচ্চারণ',
+                'fluency': 'সাবলীলতা',
+                'accent': 'উচ্চারণ',
+                'idiom': 'প্রবাদ',
+                'synonym': 'প্রতিশব্দ',
+                'antonym': 'বিপরীত শব্দ',
+                'comprehension': 'বোধশক্তি',
+                'articulate': 'স্পষ্টভাবে বলা',
+                'eloquent': 'বাক্পটু',
+                'proficient': 'দক্ষ',
+                'beginner': 'শিক্ষানবিস',
+                'intermediate': 'মধ্যবর্তী',
+                'advanced': 'উন্নত',
+                'practice': 'অনুশীলন',
+                'improve': 'উন্নত করা',
+                'learn': 'শেখা',
+                'teach': 'শেখানো',
+                'understand': 'বুঝতে পারা',
+                'speak': 'কথা বলা',
+                'listen': 'শোনা',
+                'read': 'পড়া',
+                'write': 'লেখা',
+                'hello': 'হ্যালো',
+                'goodbye': 'বিদায়',
+                'please': 'দয়া করে',
+                'thank': 'ধন্যবাদ',
+                'sorry': 'দুঃখিত',
+                'yes': 'হ্যাঁ',
+                'no': 'না',
+                'maybe': 'হয়তো',
+                'always': 'সবসময়',
+                'never': 'কখনো না',
+                'often': 'প্রায়শই',
+                'sometimes': 'মাঝে মাঝে',
+                'today': 'আজ',
+                'tomorrow': 'আগামীকাল',
+                'yesterday': 'গতকাল',
+                'now': 'এখন',
+                'later': 'পরে',
+                'soon': 'শীঘ্রই',
+                'already': 'ইতিমধ্যে',
+                'yet': 'এখনো',
+                'still': 'এখনও',
+                'very': 'খুব',
+                'too': 'খুব',
+                'enough': 'যথেষ্ট',
+                'little': 'সামান্য',
+                'many': 'অনেক',
+                'few': 'কয়েকটি',
+                'more': 'আরও',
+                'less': 'কম',
+                'most': 'সবচেয়ে',
+                'least': 'সবচেয়ে কম',
+                'good': 'ভাল',
+                'bad': 'খারাপ',
+                'big': 'বড়',
+                'small': 'ছোট',
+                'happy': 'খুশি',
+                'sad': 'দুঃখিত',
+                'angry': 'রাগান্বিত',
+                'beautiful': 'সুন্দর',
+                'ugly': 'কুৎসিত',
+                'rich': 'ধনী',
+                'poor': 'দরিদ্র',
+                'strong': 'শক্তিশালী',
+                'weak': 'দুর্বল',
+                'fast': 'দ্রুত',
+                'slow': 'ধীর',
+                'hot': 'গরম',
+                'cold': 'ঠান্ডা',
+                'new': 'নতুন',
+                'old': 'পুরাতন',
+                'young': 'তরুণ',
+                'easy': 'সহজ',
+                'difficult': 'কঠিন',
+                'important': 'গুরুত্বপূর্ণ',
+                'necessary': 'প্রয়োজনীয়',
+                'possible': 'সম্ভব',
+                'impossible': 'অসম্ভব',
+                'right': 'সঠিক',
+                'wrong': 'ভুল',
+                'true': 'সত্য',
+                'false': 'মিথ্যা',
+                'open': 'খোলা',
+                'close': 'বন্ধ',
+                'begin': 'শুরু করা',
+                'end': 'শেষ করা',
+                'start': 'শুরু',
+                'stop': 'বন্ধ',
+                'continue': 'চালিয়ে যাওয়া',
+                'break': 'ভাঙ্গা',
+                'make': 'তৈরি করা',
+                'do': 'করা',
+                'have': 'আছে',
+                'be': 'হওয়া',
+                'go': 'যাওয়া',
+                'come': 'আসা',
+                'see': 'দেখা',
+                'hear': 'শোনা',
+                'know': 'জানা',
+                'think': 'চিন্তা করা',
+                'feel': 'অনুভব করা',
+                'want': 'চাওয়া',
+                'need': 'প্রয়োজন',
+                'like': 'পছন্দ করা',
+                'love': 'ভালোবাসা',
+                'hate': 'ঘৃণা করা'
+            };
+            
+            return dictionary[word] || '';
         }
         
-        function saveChatHistory() {
-            saveChatToStorage();
-            showNotification('✅ Chat saved successfully!', 'success');
-        }
-        
-        function loadChatHistory() {
-            loadSavedChat();
-            showNotification('📂 Previous chat loaded!', 'success');
-        }
-        
-        function clearChat() {
-            if (confirm('Are you sure you want to clear the chat?')) {
-                chatHistory = [];
-                chatBox.innerHTML = '';
-                localStorage.removeItem(CHAT_STORAGE_KEY);
-                addMessage(`👋 Hello! I'm your AI English tutor. I can help you with:\n\n• Conversation practice\n• Grammar explanations\n• Vocabulary building\n• Writing corrections\n\nWhat would you like to practice today?`, 'ai', true);
-                showNotification('🗑️ Chat cleared!', 'success');
+        // Auto-detect and translate as user types
+        async function autoDetectAndTranslate() {
+            const word = newWordInput.value.trim();
+            if (word.length > 2 && word.split(' ').length === 1) {
+                // Show loading state
+                banglaMeaningInput.value = 'Translating...';
+                banglaMeaningInput.style.color = '#3b82f6';
+                
+                const translation = await translateToBangla(word);
+                if (translation) {
+                    banglaMeaningInput.value = translation;
+                    banglaMeaningInput.style.color = '#dc2626';
+                } else {
+                    banglaMeaningInput.value = 'Type Bangla meaning';
+                    banglaMeaningInput.style.color = '#64748b';
+                }
+            } else {
+                banglaMeaningInput.value = '';
             }
         }
         
-        // ===== VOCABULARY NOTEBOOK SYSTEM =====
+        // ===== SMART WORD SAVING =====
+        async function saveWordWithAutoTranslation(word, context = '') {
+            if (!word || word.trim() === '') {
+                alert('Please enter a word to save');
+                return;
+            }
+            
+            const cleanWord = word.trim().toLowerCase();
+            
+            // Show loading in button
+            translateBtn.disabled = true;
+            translateBtnText.textContent = 'Translating...';
+            translateSpinner.style.display = 'inline-block';
+            
+            try {
+                // 1. Get Bangla translation
+                const banglaTranslation = await translateToBangla(cleanWord);
+                
+                // 2. Get English explanation from AI
+                let englishExplanation = context;
+                if (!englishExplanation || englishExplanation.length < 10) {
+                    const aiResponse = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            message: `Explain the word "${cleanWord}" simply in one sentence with an example.`
+                        })
+                    });
+                    
+                    if (aiResponse.ok) {
+                        const data = await aiResponse.json();
+                        englishExplanation = data.choices?.[0]?.message?.content || 
+                                           `The word "${cleanWord}" means to...`;
+                    }
+                }
+                
+                // 3. Create vocabulary item
+                const vocabItem = {
+                    word: cleanWord,
+                    meaning: englishExplanation.substring(0, 200),
+                    bangla: banglaTranslation || 'Translation not available',
+                    date: new Date().toISOString(),
+                    autoTranslated: !!banglaTranslation
+                };
+                
+                // 4. Save to vocabulary
+                vocabulary.unshift(vocabItem);
+                if (vocabulary.length > 100) vocabulary.pop();
+                
+                saveVocabularyToStorage();
+                renderVocabularyList();
+                
+                // 5. Show success message
+                showNotification(`✅ "${cleanWord}" saved with Bangla translation!`, 'success');
+                
+                // 6. Clear inputs
+                newWordInput.value = '';
+                banglaMeaningInput.value = '';
+                
+            } catch (error) {
+                console.error('Error saving word:', error);
+                showNotification('⚠️ Error saving word. Please try again.', 'error');
+            } finally {
+                // Reset button
+                translateBtn.disabled = false;
+                translateBtnText.textContent = '🌐 Auto-Translate & Save';
+                translateSpinner.style.display = 'none';
+            }
+        }
+        
+        // One-click save from chat
+        async function quickSaveWordFromChat(word) {
+            currentSelectedWord = word;
+            
+            // Show loading
+            const saveBtn = event.target;
+            const originalHTML = saveBtn.innerHTML;
+            saveBtn.innerHTML = '<span class="spinner"></span>';
+            saveBtn.disabled = true;
+            
+            try {
+                // Get translation
+                const translation = await translateToBangla(word);
+                
+                // Get context from current AI message
+                const context = currentAIMessage.substring(0, 150);
+                
+                // Save the word
+                const vocabItem = {
+                    word: word.toLowerCase(),
+                    meaning: context,
+                    bangla: translation || 'Translation not available',
+                    date: new Date().toISOString(),
+                    autoTranslated: !!translation
+                };
+                
+                vocabulary.unshift(vocabItem);
+                if (vocabulary.length > 100) vocabulary.pop();
+                
+                saveVocabularyToStorage();
+                renderVocabularyList();
+                
+                // Show success
+                showNotification(`✅ "${word}" saved with auto-translation!`, 'success');
+                
+            } catch (error) {
+                console.error('Error in quick save:', error);
+                showNotification('⚠️ Error saving word', 'error');
+            } finally {
+                // Reset button
+                saveBtn.innerHTML = originalHTML;
+                saveBtn.disabled = false;
+            }
+        }
+        
+        // ===== VOCABULARY SYSTEM =====
         function loadVocabulary() {
             const saved = localStorage.getItem(VOCAB_STORAGE_KEY);
             if (saved) {
@@ -892,128 +1079,35 @@
             if (vocabulary.length === 0) {
                 vocabList.innerHTML = `
                     <div class="empty-vocab">
-                        <div>📝</div>
-                        No words saved yet.<br>
-                        <small>Click 📝 on AI messages to save words!</small>
+                        <div>📚</div>
+                        <strong>Your Smart Vocabulary Notebook</strong><br>
+                        <small>Auto-translates English words to Bangla</small>
                     </div>
                 `;
             } else {
-                vocabList.innerHTML = vocabulary.map((item, index) => `
-                    <div class="vocab-item">
-                        <button class="delete-vocab" onclick="deleteVocabularyItem(${index})" title="Delete">×</button>
-                        <div class="vocab-word">${item.word}</div>
-                        <div class="vocab-meaning">${item.meaning.substring(0, 80)}${item.meaning.length > 80 ? '...' : ''}</div>
-                        <div class="vocab-bangla">🇧🇩 ${item.bangla}</div>
-                        <div class="vocab-date">Saved: ${new Date(item.date).toLocaleDateString('en-BD')}</div>
-                    </div>
-                `).join('');
+                let translated = 0;
+                
+                vocabList.innerHTML = vocabulary.map((item, index) => {
+                    if (item.autoTranslated) translated++;
+                    
+                    return `
+                        <div class="vocab-item">
+                            <button class="delete-vocab" onclick="deleteVocabularyItem(${index})" title="Delete">×</button>
+                            <div class="vocab-word">
+                                ${item.word}
+                                ${item.autoTranslated ? '<span style="font-size:0.7rem; color:#10b981; margin-left:5px;">(Auto-translated)</span>' : ''}
+                            </div>
+                            <div class="vocab-meaning">${item.meaning.substring(0, 80)}${item.meaning.length > 80 ? '...' : ''}</div>
+                            <div class="vocab-bangla">🇧🇩 ${item.bangla}</div>
+                            ${item.example ? `<div class="vocab-example">Example: ${item.example}</div>` : ''}
+                            <div class="vocab-date">Saved: ${new Date(item.date).toLocaleDateString('en-BD')}</div>
+                        </div>
+                    `;
+                }).join('');
+                
+                translatedCount.textContent = translated;
             }
-            updateWordCount();
-        }
-        
-        function updateWordCount() {
             wordCount.textContent = vocabulary.length;
-        }
-        
-        function addVocabularyItem() {
-            const word = newWordInput.value.trim();
-            const bangla = banglaMeaningInput.value.trim();
-            
-            if (!word) {
-                showNotification('⚠️ Please enter an English word', 'error');
-                return;
-            }
-            
-            if (!bangla) {
-                showNotification('⚠️ Please enter the Bangla meaning', 'error');
-                return;
-            }
-            
-            // Show loading
-            const loadingDiv = document.createElement('div');
-            loadingDiv.className = 'vocab-item';
-            loadingDiv.innerHTML = `
-                <div class="vocab-word">${word}</div>
-                <div style="text-align: center; padding: 10px;">
-                    <div class="spinner"></div>
-                    <div style="color: var(--gray); font-size: 0.9rem; margin-top: 5px;">
-                        Getting explanation from AI...
-                    </div>
-                </div>
-            `;
-            vocabList.prepend(loadingDiv);
-            
-            // Get AI explanation
-            fetch(API_URL, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({message: `Explain the word "${word}" in simple English.`})
-            })
-            .then(response => response.json())
-            .then(data => {
-                loadingDiv.remove();
-                
-                const meaning = data.choices?.[0]?.message?.content || `Word: ${word}`;
-                
-                const vocabItem = {
-                    word: word,
-                    meaning: meaning,
-                    bangla: bangla,
-                    date: new Date().toISOString()
-                };
-                
-                vocabulary.unshift(vocabItem);
-                if (vocabulary.length > 100) vocabulary.pop();
-                
-                saveVocabularyToStorage();
-                renderVocabularyList();
-                
-                newWordInput.value = '';
-                banglaMeaningInput.value = '';
-                
-                showNotification(`✅ "${word}" added to vocabulary!`, 'success');
-            })
-            .catch(error => {
-                loadingDiv.remove();
-                console.error('Error getting word meaning:', error);
-                
-                // Add with basic meaning if AI fails
-                const vocabItem = {
-                    word: word,
-                    meaning: `Word: ${word}`,
-                    bangla: bangla,
-                    date: new Date().toISOString()
-                };
-                
-                vocabulary.unshift(vocabItem);
-                saveVocabularyToStorage();
-                renderVocabularyList();
-                
-                newWordInput.value = '';
-                banglaMeaningInput.value = '';
-                
-                showNotification(`✅ "${word}" added (offline mode)`, 'success');
-            });
-        }
-        
-        function saveWordFromMessage(word, messageText) {
-            const bangla = prompt(`Enter Bangla meaning for "${word}":`);
-            if (!bangla) return;
-            
-            const vocabItem = {
-                word: word,
-                meaning: messageText.substring(0, 200),
-                bangla: bangla,
-                date: new Date().toISOString()
-            };
-            
-            vocabulary.unshift(vocabItem);
-            if (vocabulary.length > 100) vocabulary.pop();
-            
-            saveVocabularyToStorage();
-            renderVocabularyList();
-            
-            showNotification(`✅ "${word}" saved to notebook!`, 'success');
         }
         
         function deleteVocabularyItem(index) {
@@ -1044,28 +1138,28 @@
                 return;
             }
             
-            let exportText = '=== English Vocabulary List ===\n\n';
+            let exportText = '=== English Vocabulary with Bangla Translation ===\n\n';
             
             vocabulary.forEach((item, index) => {
                 exportText += `${index + 1}. ${item.word}\n`;
-                exportText += `   English: ${item.meaning.substring(0, 100)}${item.meaning.length > 100 ? '...' : ''}\n`;
+                exportText += `   English: ${item.meaning.substring(0, 100)}\n`;
                 exportText += `   বাংলা: ${item.bangla}\n`;
                 exportText += `   Date: ${new Date(item.date).toLocaleDateString('en-BD')}\n\n`;
             });
             
-            exportText += `\nTotal: ${vocabulary.length} words\nExported: ${new Date().toLocaleString('en-BD')}`;
+            exportText += `\nTotal: ${vocabulary.length} words\nAuto-translated: ${vocabulary.filter(v => v.autoTranslated).length} words\nExported: ${new Date().toLocaleString('en-BD')}`;
             
             const blob = new Blob([exportText], { type: 'text/plain;charset=utf-8' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `english-vocabulary-${new Date().toISOString().split('T')[0]}.txt`;
+            a.download = `english-bangla-vocabulary-${new Date().toISOString().split('T')[0]}.txt`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            showNotification(`📥 Exported ${vocabulary.length} words!`, 'success');
+            showNotification(`📥 Exported ${vocabulary.length} words with Bangla translations!`, 'success');
         }
         
         // ===== CHAT FUNCTIONS =====
@@ -1075,14 +1169,33 @@
             messageDiv.textContent = text;
             
             if (sender === 'ai') {
+                currentAIMessage = text;
+                
+                // Extract potential words from AI message
+                const words = text.match(/\b[a-zA-Z]{4,}\b/g) || [];
+                const uniqueWords = [...new Set(words)].slice(0, 3); // Get up to 3 unique words
+                
+                // Add save button
                 const saveBtn = document.createElement('button');
                 saveBtn.className = 'save-word-btn';
-                saveBtn.title = 'Save word from this message';
+                saveBtn.title = 'Save words from this message';
                 saveBtn.innerHTML = '📝';
-                saveBtn.onclick = () => {
-                    const word = prompt('Which word from this message would you like to save?');
-                    if (word && word.trim()) {
-                        saveWordFromMessage(word.trim(), text);
+                saveBtn.onclick = async () => {
+                    if (uniqueWords.length === 1) {
+                        // Single word - save directly
+                        await quickSaveWordFromChat(uniqueWords[0]);
+                    } else if (uniqueWords.length > 1) {
+                        // Multiple words - let user choose
+                        const word = prompt(`Which word would you like to save?\n\nAvailable words: ${uniqueWords.join(', ')}`);
+                        if (word && uniqueWords.includes(word)) {
+                            await quickSaveWordFromChat(word);
+                        }
+                    } else {
+                        // No words detected - ask user
+                        const word = prompt('Enter the word you want to save from this message:');
+                        if (word && word.trim()) {
+                            await quickSaveWordFromChat(word.trim());
+                        }
                     }
                 };
                 messageDiv.appendChild(saveBtn);
@@ -1098,18 +1211,42 @@
             }
         }
         
-        function showTyping() {
-            const typingDiv = document.createElement('div');
-            typingDiv.className = 'message ai-message typing';
-            typingDiv.innerHTML = 'AI is thinking<span>.</span><span>.</span><span>.</span>';
-            typingDiv.id = 'typing-indicator';
-            chatBox.appendChild(typingDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
+        // ===== NOTIFICATION SYSTEM =====
+        function showNotification(message, type = 'info') {
+            // Create notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 10px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 10000;
+                animation: slideInRight 0.3s ease;
+                max-width: 300px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
         
-        function hideTyping() {
-            const typing = document.getElementById('typing-indicator');
-            if (typing) typing.remove();
+        // ===== EVENT HANDLERS =====
+        async function translateAndAddWord() {
+            const word = newWordInput.value.trim();
+            if (!word) {
+                showNotification('Please enter an English word', 'error');
+                return;
+            }
+            
+            await saveWordWithAutoTranslation(word);
         }
         
         async function sendMessage() {
@@ -1119,9 +1256,14 @@
             addMessage(text, 'user');
             userInput.value = '';
             sendBtn.disabled = true;
-            userInput.placeholder = "AI is responding...";
             
-            showTyping();
+            // Show typing indicator
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai-message typing';
+            typingDiv.innerHTML = 'AI is thinking<span>.</span><span>.</span><span>.</span>';
+            typingDiv.id = 'typing-indicator';
+            chatBox.appendChild(typingDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
             
             try {
                 const response = await fetch(API_URL, {
@@ -1130,13 +1272,11 @@
                     body: JSON.stringify({message: text})
                 });
                 
-                hideTyping();
+                document.getElementById('typing-indicator').remove();
                 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    let errorMsg = `Error: ${errorData.error || 'Unknown error'}`;
-                    if (errorData.message) errorMsg += ` - ${errorData.message}`;
-                    addMessage(errorMsg, 'ai');
+                    addMessage(`Error: ${errorData.error || 'Unknown error'}`, 'ai');
                     return;
                 }
                 
@@ -1148,38 +1288,17 @@
                     addMessage("Sorry, I didn't understand the response.", 'ai');
                 }
             } catch (error) {
-                hideTyping();
+                document.getElementById('typing-indicator')?.remove();
                 addMessage("Network error. Please check your connection.", 'ai');
                 console.error('Error:', error);
             }
             
             sendBtn.disabled = false;
-            userInput.placeholder = "Type your message in English...";
             userInput.focus();
         }
         
-        // ===== KEYBOARD SHORTCUTS =====
-        document.addEventListener('keydown', (e) => {
-            // Ctrl + S to save chat
-            if (e.ctrlKey && e.key === 's') {
-                e.preventDefault();
-                saveChatHistory();
-            }
-            // Ctrl + E to export vocabulary
-            if (e.ctrlKey && e.key === 'e') {
-                e.preventDefault();
-                exportVocabulary();
-            }
-            // Ctrl + L to load chat
-            if (e.ctrlKey && e.key === 'l') {
-                e.preventDefault();
-                loadChatHistory();
-            }
-        });
-        
         // ===== INITIALIZATION =====
         document.addEventListener('DOMContentLoaded', () => {
-            loadSavedChat();
             loadVocabulary();
             
             sendBtn.addEventListener('click', sendMessage);
@@ -1190,38 +1309,52 @@
                 }
             });
             
-            // Auto-save every 30 seconds
-            setInterval(saveChatToStorage, 30000);
+            // Auto-save vocabulary every 30 seconds
+            setInterval(saveVocabularyToStorage, 30000);
             
             // Focus on input
             userInput.focus();
             
-            // Check if app is running as PWA
-            if (window.matchMedia('(display-mode: standalone)').matches) {
-                console.log('Running as PWA');
-                document.title = 'English Tutor';
-            }
+            // Show welcome tip
+            setTimeout(() => {
+                showNotification('✨ Try: Type any English word in the right panel for auto-translation!', 'info');
+            }, 2000);
             
-            console.log('English Tutor AI PWA loaded successfully!');
-            
-            // Show welcome message if first visit
-            const firstVisit = !localStorage.getItem(CHAT_STORAGE_KEY);
-            if (firstVisit) {
-                setTimeout(() => {
-                    showNotification('📱 Tip: Install this app for better experience!', 'success');
-                }, 3000);
-            }
+            console.log('English Tutor with Auto-Translation loaded!');
         });
         
-        // ===== OFFLINE SUPPORT =====
-        const offlineMessages = [
-            "I'm in offline mode. Your chat history and vocabulary are still available.",
-            "You're offline. Previous conversations are saved locally.",
-            "Network unavailable. Working with saved data only."
-        ];
+        // ===== CHAT HISTORY FUNCTIONS (for buttons) =====
+        function saveChatHistory() {
+            localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(chatHistory));
+            showNotification('✅ Chat saved successfully!', 'success');
+        }
         
-        function getRandomOfflineMessage() {
-            return offlineMessages[Math.floor(Math.random() * offlineMessages.length)];
+        function loadChatHistory() {
+            const saved = localStorage.getItem(CHAT_STORAGE_KEY);
+            if (saved) {
+                try {
+                    chatHistory = JSON.parse(saved);
+                    if (chatHistory.length > 0) {
+                        chatBox.innerHTML = '';
+                        chatHistory.forEach(msg => {
+                            addMessage(msg.text, msg.sender, false);
+                        });
+                        showNotification('📂 Previous chat loaded!', 'success');
+                    }
+                } catch (e) {
+                    console.error('Error loading chat:', e);
+                }
+            }
+        }
+        
+        function clearChat() {
+            if (confirm('Are you sure you want to clear the chat?')) {
+                chatHistory = [];
+                chatBox.innerHTML = '';
+                localStorage.removeItem(CHAT_STORAGE_KEY);
+                addMessage(`👋 Hello! I'm your AI English tutor with auto Bangla translation! Try asking about any word and click 📝 to save it with automatic translation.`, 'ai', true);
+                showNotification('🗑️ Chat cleared!', 'success');
+            }
         }
     </script>
 </body>
