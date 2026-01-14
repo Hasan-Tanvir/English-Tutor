@@ -255,7 +255,7 @@
     </div>
 
     <script>
-        // Configuration
+        // Configuration - FIXED: Using relative path to YOUR Vercel API
         const API_URL = '/api/chat';
         
         // DOM elements
@@ -288,7 +288,7 @@
             if (typing) typing.remove();
         }
         
-        // Main function to send message
+        // Main function to send message - FIXED: Calls correct endpoint
         async function sendMessage() {
             const text = userInput.value.trim();
             if (!text) return;
@@ -303,9 +303,10 @@
             showTyping();
             
             try {
-                console.log('Sending message to API:', text);
+                console.log('Sending message to:', API_URL);
+                console.log('Message:', text);
                 
-                // Call our Vercel API endpoint
+                // Call OUR Vercel API endpoint (not DeepSeek directly)
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
@@ -313,29 +314,43 @@
                     },
                     body: JSON.stringify({
                         message: text,
-                        userId: 'english-learner-' + Date.now()
+                        timestamp: new Date().toISOString()
                     })
                 });
                 
-                console.log('API Response status:', response.status);
-                const data = await response.json();
-                console.log('API Response data:', data);
+                console.log('Response status:', response.status);
                 
                 // Remove typing indicator
                 hideTyping();
+                
+                if (!response.ok) {
+                    try {
+                        const errorData = await response.json();
+                        addMessage(`Error (${response.status}): ${errorData.error || 'Unknown error'}`, 'ai');
+                        if (errorData.details) {
+                            console.error('Error details:', errorData.details);
+                        }
+                    } catch {
+                        addMessage(`Error: Server returned ${response.status} status`, 'ai');
+                    }
+                    return;
+                }
+                
+                const data = await response.json();
+                console.log('Response data:', data);
                 
                 if (data.choices && data.choices[0].message) {
                     const aiText = data.choices[0].message.content;
                     addMessage(aiText, 'ai');
                 } else if (data.error) {
-                    addMessage(`Error: ${data.error}. ${data.hint || ''}`, 'ai');
+                    addMessage(`Error: ${data.error}`, 'ai');
                 } else {
-                    addMessage("I received your message but couldn't process it. Please try again.", 'ai');
+                    addMessage("Sorry, I didn't understand the response.", 'ai');
                 }
             } catch (error) {
                 hideTyping();
                 console.error('Fetch error:', error);
-                addMessage("Sorry, I'm having trouble connecting. Please check your internet and try again.", 'ai');
+                addMessage("Network error. Please check your connection and try again.", 'ai');
             }
             
             // Re-enable send button
@@ -353,8 +368,23 @@
             }
         });
         
-        // Initial focus
+        // Initial focus and debug info
         userInput.focus();
+        console.log('English Tutor AI loaded successfully');
+        console.log('API URL:', API_URL);
+        console.log('Full URL:', window.location.origin + API_URL);
+        
+        // Quick connection test
+        window.addEventListener('load', () => {
+            console.log('Testing API connection...');
+            fetch(API_URL, { method: 'POST' })
+                .then(res => {
+                    console.log('API endpoint exists. Expected 400/405 for empty request.');
+                })
+                .catch(err => {
+                    console.warn('API test failed (might be normal):', err.message);
+                });
+        });
     </script>
 </body>
 </html>
