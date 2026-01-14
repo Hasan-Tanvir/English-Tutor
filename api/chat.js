@@ -1,6 +1,6 @@
-// api/chat.js - Vercel Serverless Function (ES Modules)
+// api/chat.js - UPDATED FOR GROQ API (100% FREE)
 export default async function handler(req, res) {
-    console.log('API endpoint called:', req.method, req.url);
+    console.log('=== ENGLISH TUTOR API (GROQ) CALLED ===');
     
     // Enable CORS
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -8,162 +8,163 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
     res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
     
-    // Handle preflight requests
+    // Handle preflight
     if (req.method === 'OPTIONS') {
-        console.log('Handling OPTIONS preflight request');
         return res.status(200).end();
     }
     
-    // Only allow POST requests
+    // Only POST allowed
     if (req.method !== 'POST') {
-        console.log('Method not allowed:', req.method);
-        return res.status(405).json({
+        return res.status(405).json({ 
             error: 'Method not allowed',
-            message: 'Please use POST method to send messages'
+            message: 'Please use POST method'
         });
     }
     
     try {
-        // Parse request body
+        // Parse request
         let body;
         try {
-            body = await new Promise((resolve, reject) => {
-                let data = '';
-                req.on('data', chunk => data += chunk);
-                req.on('end', () => {
-                    try {
-                        resolve(JSON.parse(data));
-                    } catch (e) {
-                        reject(new Error('Invalid JSON'));
-                    }
-                });
-                req.on('error', reject);
-            });
-        } catch (parseError) {
-            console.error('Failed to parse request body:', parseError);
+            body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+        } catch (error) {
+            console.error('JSON parse error:', error);
             return res.status(400).json({
-                error: 'Invalid request format',
-                message: 'Please send valid JSON in the request body'
+                error: 'Invalid JSON',
+                message: 'Request body must be valid JSON'
             });
         }
         
         const { message } = body;
         
         if (!message || typeof message !== 'string' || message.trim() === '') {
-            console.error('Invalid message received:', message);
             return res.status(400).json({
                 error: 'Invalid message',
                 message: 'Please provide a non-empty message'
             });
         }
         
-        console.log('Processing message (first 100 chars):', message.substring(0, 100));
+        console.log('User message:', message.substring(0, 100));
         
-        // Get API key from environment variable
-        const apiKey = process.env.DEEPSEEK_API_KEY;
+        // Get GROQ API key (not DeepSeek)
+        const apiKey = process.env.GROQ_API_KEY;
         
         if (!apiKey) {
-            console.error('API key not found in environment variables');
+            console.error('GROQ_API_KEY not found in environment');
             return res.status(500).json({
                 error: 'Server configuration error',
-                message: 'API key is not configured. Please contact the administrator.',
-                hint: 'Check Vercel environment variables for DEEPSEEK_API_KEY'
+                message: 'GROQ API key is not configured',
+                hint: 'Add GROQ_API_KEY to Vercel environment variables'
             });
         }
         
-        console.log('API key found, calling DeepSeek API...');
+        console.log('GROQ API key found, making request...');
         
-        // Prepare the request to DeepSeek API
-        const requestBody = {
-            model: 'deepseek-chat',
-            messages: [
-                {
-                    role: 'system',
-                    content: `You are a friendly, patient English tutor. Your goal is to help users practice and improve their English skills.
-                    Guidelines:
-                    1. Be encouraging and positive
-                    2. Correct mistakes gently
-                    3. Explain grammar simply with examples
-                    4. Keep responses under 150 words
-                    5. Speak at intermediate English level
-                    6. Focus on practical conversation
-                    
-                    Example interactions:
-                    - User: "I goed to market yesterday"
-                    - You: "Good try! The correct form is 'I went to the market yesterday.' 'Go' is an irregular verb: go → went → gone."
-                    
-                    Now help the user with their English practice:`
-                },
-                {
-                    role: 'user',
-                    content: message
-                }
-            ],
-            max_tokens: 500,
-            temperature: 0.7,
-            stream: false
-        };
-        
-        console.log('Calling DeepSeek API with request body:', JSON.stringify(requestBody).substring(0, 200) + '...');
-        
-        const deepseekResponse = await fetch('https://api.deepseek.com/chat/completions', {
+        // Call GROQ API (FREE TIER)
+        const groqResponse = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${apiKey}`,
                 'Accept': 'application/json'
             },
-            body: JSON.stringify(requestBody),
-            timeout: 10000 // 10 second timeout
+            body: JSON.stringify({
+                model: 'llama-3.3-70b-versatile', // FREE MODEL
+                messages: [
+                    {
+                        role: 'system',
+                        content: `You are a friendly, patient English tutor. Help users practice and improve their English.
+                        
+                        GUIDELINES:
+                        1. Be encouraging and positive
+                        2. Correct mistakes gently with explanations
+                        3. Use simple, clear language
+                        4. Give examples when explaining grammar
+                        5. Keep responses under 150 words
+                        6. Focus on practical conversation skills
+                        7. Always respond in English
+                        
+                        EXAMPLE INTERACTIONS:
+                        User: "I goed to market"
+                        You: "Good try! The correct form is 'I went to the market.' 'Go' is an irregular verb: go → went → gone."
+                        
+                        Now help the user practice English:`
+                    },
+                    {
+                        role: 'user',
+                        content: message
+                    }
+                ],
+                max_tokens: 500,
+                temperature: 0.7,
+                stream: false
+            })
         });
         
-        console.log('DeepSeek API response status:', deepseekResponse.status);
+        console.log('GROQ response status:', groqResponse.status);
         
-        if (!deepseekResponse.ok) {
+        if (!groqResponse.ok) {
             let errorText;
             try {
-                errorText = await deepseekResponse.text();
+                errorText = await groqResponse.text();
+                console.error('GROQ API error:', errorText);
             } catch {
-                errorText = 'Could not read error response';
+                errorText = 'Could not read error';
             }
             
-            console.error('DeepSeek API error:', deepseekResponse.status, errorText);
+            // Handle specific errors
+            if (groqResponse.status === 401) {
+                return res.status(401).json({
+                    error: 'Invalid API key',
+                    message: 'Groq API key is invalid or expired',
+                    hint: 'Get a free key from console.groq.com'
+                });
+            }
             
-            return res.status(deepseekResponse.status).json({
+            if (groqResponse.status === 429) {
+                return res.status(429).json({
+                    error: 'Rate limit',
+                    message: 'Too many requests. Groq free tier has limits.',
+                    hint: 'Wait a minute and try again'
+                });
+            }
+            
+            return res.status(groqResponse.status).json({
                 error: 'AI service error',
-                message: `The AI service responded with an error (${deepseekResponse.status})`,
-                details: errorText.substring(0, 500)
+                status: groqResponse.status,
+                details: errorText.substring(0, 200)
             });
         }
         
-        const responseData = await deepseekResponse.json();
-        console.log('DeepSeek API success, received response');
+        const data = await groqResponse.json();
+        console.log('GROQ response received successfully');
         
-        if (!responseData.choices || !responseData.choices[0] || !responseData.choices[0].message) {
-            console.error('Invalid response structure from DeepSeek:', responseData);
+        // Groq returns slightly different format than DeepSeek
+        if (data.choices && data.choices[0] && data.choices[0].message) {
+            // Return in same format as before for compatibility
+            return res.status(200).json({
+                choices: [{
+                    message: {
+                        role: 'assistant',
+                        content: data.choices[0].message.content
+                    }
+                }],
+                model: data.model,
+                usage: data.usage
+            });
+        } else {
+            console.error('Unexpected Groq response format:', data);
             return res.status(500).json({
-                error: 'Invalid response from AI service',
-                message: 'The AI service returned an unexpected response format'
+                error: 'Unexpected response format',
+                message: 'The AI service returned an unexpected response'
             });
         }
-        
-        const aiMessage = responseData.choices[0].message.content;
-        console.log('AI response (first 100 chars):', aiMessage.substring(0, 100));
-        
-        // Return the successful response
-        return res.status(200).json({
-            ...responseData,
-            server_timestamp: new Date().toISOString()
-        });
         
     } catch (error) {
-        console.error('Unhandled error in API handler:', error);
-        
+        console.error('Handler error:', error);
         return res.status(500).json({
             error: 'Internal server error',
-            message: 'An unexpected error occurred',
-            details: process.env.NODE_ENV === 'development' ? error.message : undefined,
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            message: error.message,
+            timestamp: new Date().toISOString()
         });
     }
 }
